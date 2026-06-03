@@ -1,31 +1,34 @@
-name: Auto Build Test
+name: Build HsMod DLL
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ "bepinex5" ]
-  pull_request:
-  merge_group:
+    branches:
+      - bepinex5
+      - main
+      - master
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    # Checkout the repository
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    
-    # Setup .NET SDK
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.x
-    
-    # Restore dependencies
-    - name: Restore dependencies
-      run: dotnet restore --locked-mode
-    
-    # Build the project
-    - name: Build HsMod
-      run: dotnet build --configuration Release --no-restore
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+
+      - name: Restore dependencies
+        run: dotnet restore --locked-mode
+
+      - name: Build HsMod
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Upload HsMod.dll
+        uses: actions/upload-artifact@v4
+        with:
+          name: HsMod-dll
+          path: HsMod/Release/HsMod.dll
